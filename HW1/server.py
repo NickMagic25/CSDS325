@@ -8,7 +8,7 @@ store_inventory={}
 
 def get(key):
     if key in store_inventory:
-        return store_inventory[key]
+        return str(store_inventory[key])
     else:
         return "Cannot find \"" + key + "\" in the data store."
 
@@ -18,13 +18,13 @@ def put(key,value):
         return "Value \"" + value + "\" is not valid."
     else:
         store_inventory[key]=value
-        return "Successfully mapped \""+ value + "\" to \"" + key + "\"."
+        return "Successfully mapped \""+ str(value) + "\" to \"" + key + "\"."
 
 
 def mappings():
     output=""
     for key in list(store_inventory):
-        output+= key + " " + store_inventory[key] + "\n"
+        output+= key + " " + str(store_inventory[key]) + "\n"
     return output
 
 
@@ -42,16 +42,34 @@ def values():
     return output
 
 
+def handler(arr):
+    if len(arr)==3:
+        if arr[0].lower() == "put":
+            return put(arr[1], int(arr[2]))
+    elif len(arr)==2:
+        if arr[0].lower() == "get":
+            return get(arr[1])
+    elif len(arr)==1:
+        if arr[0].lower() == "values":
+            return values()
+        elif arr[0].lower() == "keyset":
+            return keyset()
+        elif arr[0].lower() == "mappings":
+            return mappings()
+    return "Invalid command"
+
+
 def main():
     serverPort = 12000
     serverSocket = socket(AF_INET,SOCK_STREAM)
     serverSocket.bind(('',serverPort))
     serverSocket.listen(1)
     print ("The server is ready to receive")
+    connectionSocket, addr = serverSocket.accept()
     while True:
-        connectionSocket, addr = serverSocket.accept()
         sentence = connectionSocket.recv(1024).decode()
-        capitalizedSentence = sentence.upper()
-        connectionSocket.send(capitalizedSentence.
-        encode())
-        connectionSocket.close()
+        print("Recieved: " + sentence)
+        arr=sentence.split()
+        connectionSocket.send(handler(arr).encode())
+
+main()
