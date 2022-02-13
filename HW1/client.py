@@ -25,6 +25,7 @@ def connect():
     while loop:
         command=raw_input("KeyValue Service> ")
         if command.lower() == "bye":
+            clientSocket.send(command.lower().encode())
             clientSocket.close()
             loop=False
             print("See you later.")

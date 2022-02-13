@@ -38,7 +38,7 @@ def keyset():
 def values():
     output = ""
     for key in list(store_inventory):
-        output += store_inventory[key] + "\n"
+        output += str(store_inventory[key]) + "\n"
     return output
 
 
@@ -70,6 +70,8 @@ def main():
         sentence = connectionSocket.recv(1024).decode()
         print("Recieved: " + sentence)
         arr=sentence.split()
+        if arr[0] =="bye":
+            connectionSocket.close();
         connectionSocket.send(handler(arr).encode())
 
 main()
